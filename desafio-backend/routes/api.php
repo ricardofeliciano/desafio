@@ -18,6 +18,10 @@ use App\Http\Controllers\Tag\TagController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+Route::get('/', function () {
+    return response()->json(['message' => 'Hello, world!']);
+});
+
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();

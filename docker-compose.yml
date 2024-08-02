@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./desafio-frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./desafio-frontend:/app
+    environment:
+      - NODE_ENV=development
+
+  backend:
+    build:
+      context: ./desafio-backend
+    ports:
+      - "8000:8000"  
+    volumes:
+      - ./desafio-backend:/app
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - APP_KEY=base64:YourAppKeyHere
+      - DB_CONNECTION=mysql
+      - DB_HOST=localhost
+      - DB_PORT=3306
+      - DB_DATABASE=desafio
+      - DB_USERNAME=admin
+      - DB_PASSWORD=123
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 12345678910
+      MYSQL_DATABASE: desafio
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: 123
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./dump.sql:/docker-entrypoint-initdb.d/desafio.sql
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    ports:
+      - "80:80"
+    depends_on:
+      - frontend
+      - backend
+
+volumes:
+  db_data:
